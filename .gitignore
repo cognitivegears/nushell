@@ -1,0 +1,37 @@
+# Nushell specific
+.history.txt
+*.log
+*.nu.log
+history.txt
+
+# OS specific files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Common build/environment directories
+/target/
+/dist/
+/build/
+/node_modules/
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environment and configuration
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+/config/*.local.nu
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
