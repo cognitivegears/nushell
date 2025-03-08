@@ -39,23 +39,55 @@ This script provides commands for fetching and formatting YouTube video metadata
 3. **youtube_markdown**
    
    ```nushell
-   youtube_markdown [url: string, dirname: string, passed_api_key?: string]
+   youtube_markdown [url: string, dirname: string, passed_api_key?: string, --file-exists-action: string]
    ```
    
    Generates a markdown file with video information and a summary created by Fabric AI. Saves the file in the specified directory.
+   
+   The `--file-exists-action` parameter supports three options:
+   - `skip` (default): Skip if a file already exists
+   - `overwrite`: Overwrite existing files
+   - `unique`: Create a unique filename by adding a number suffix
 
 #### Usage Examples
 
 ```nushell
 # Load the script
-source youtube.nu
+use youtube.nu
 
 # Get formatted metadata for a video
 youtube_metadata "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
 
 # Generate a markdown summary of a video
 youtube_markdown "https://www.youtube.com/watch?v=dQw4w9WgXcQ" "~/Documents/video_notes"
+
+# Generate with a custom API key and unique filenames
+youtube_markdown "https://www.youtube.com/watch?v=dQw4w9WgXcQ" "~/Documents/video_notes" "YOUR_API_KEY" --file-exists-action unique
 ```
+
+### youtube_generate_markdown.nu
+
+A standalone executable wrapper script for the `youtube_markdown` function that can be run directly.
+
+#### Usage
+
+```nushell
+# Basic usage
+nu youtube_generate_markdown.nu "https://www.youtube.com/watch?v=dQw4w9WgXcQ" "~/Documents/video_notes"
+
+# With options
+nu youtube_generate_markdown.nu --file-exists-action unique "https://www.youtube.com/watch?v=dQw4w9WgXcQ" "~/Documents/video_notes"
+
+# Show help
+nu youtube_generate_markdown.nu -h
+```
+
+#### Help Information
+
+Run `nu youtube_generate_markdown.nu -h` to see the complete help information, including:
+- Command syntax
+- Available options
+- Usage examples
 
 #### Setting up the YouTube API Key
 
