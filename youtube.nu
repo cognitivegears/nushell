@@ -68,19 +68,53 @@ export def youtube_metadata [url: string, passed_api_key?: string] {
 
 
 
-export def youtube_markdown [url: string, dirname: string, passed_api_key?: string] {
-
+export def youtube_markdown [
+    url: string, 
+    dirname: string, 
+    passed_api_key?: string, 
+    --file-exists-action: string = "skip"  # Options: "skip", "overwrite", "unique"
+] {
     let metadata = (get_youtube_metadata $url $passed_api_key)
+    
+    # Make a variable with title safe for a filename with .md extension
+    let titlename = ($metadata.title | str replace -r "[^a-zA-Z0-9]+" "-")
+    
+    # Format publish date and times
+    let date_fomatted = ($metadata.published_at | into datetime | format date "%Y-%m-%d")
+    let time_fomatted = ($metadata.published_at | into datetime | format date "%Y-%m-%dT%H:%M:%S")
+    let timestamp = ($metadata.published_at | into datetime | format date "%s")
+    
+    # Generate the base file name
+    let file_name = $"($titlename)-($timestamp).md"
+    mut full_path = ($dirname | path join $file_name)
+    
+    # Handle file existence based on the specified action
+    if ($full_path | path exists) {
+        if $file_exists_action == "skip" {
+            return {
+                "Status": "Skipped",
+                "File Path": $full_path,
+                "Title": $metadata.title,
+                "Reason": "File already exists and file-exists-action is set to 'skip'"
+            }
+        } else if $file_exists_action == "unique" {
+            # See if the file already exists, and if so, make filename unique
+            let i = 1
+            while ($full_path | path exists) {
+                let file_name = $"($titlename)-($timestamp)-($i).md"
+                $full_path = ($dirname | path join $file_name)
+                let i = $i + 1
+            }
+        }
+        # If overwrite, we'll use the original path and just overwrite
+    }
     
     # Format the duration (ISO 8601 format to human-readable)
     let duration = ($metadata.duration | str replace -r "PT" "" | str replace -r "H" "h " | str replace -r "M" "m " | str replace -r "S" "s")
     
-    # Format publish date
+    # Format publish date for display
     let published = ($metadata.published_at | into datetime | format date "%B %d, %Y")
-
-    let date_fomatted = ($metadata.published_at | into datetime | format date "%Y-%m-%d")
-    let time_fomatted = ($metadata.published_at | into datetime | format date "%Y-%m-%dT%H:%M:%S")
-
+    
     let description_first_line = $metadata.description | lines | first
     
     # Create a markdown output
@@ -114,30 +148,15 @@ time: ($time_fomatted)
 
 "
 
+    # Only run the expensive fabric call if we're going to use the result
     let summary = (fabric -y $url -sp extract_wisdom)
-
-   
-    # Make a variable with title safe for a filename with .md extension
-    let titlename = ($metadata.title | str replace -r "[^a-zA-Z0-9]+" "-")
-
     let markdown = $"($markdown_header)\n\n($summary)"
 
-    # Save the markdown output to a file named after the video title
-    let file_name = $"($titlename).md"
-
-    mut full_path = ($dirname | path join $file_name)
-
-    # See if the file already exists, and if so, make filename unique
-    let i = 1
-    while ($full_path | path exists) {
-        let file_name = $"($titlename)-($i).md"
-        $full_path = ($dirname | path join $file_name)
-        let i = $i + 1
-    }
-
-    $markdown | save $full_path
+    # Save the markdown output to file (with force flag for overwrite cases)
+    $markdown | save --force $full_path
 
     {
+        "Status": "Success",
         "File Path": $full_path,
         "Title": $metadata.title,
         "Duration": $duration
