@@ -22,7 +22,7 @@ Arguments:
 
 Options:
   -h, --help                  Show this help message
-  --file-exists-action <action>  What to do when file exists: \"skip\" (default), 
+  --file-exists-action <action>  What to do when file exists: \"skip\" (skip),
                               \"overwrite\", or \"unique\"
 
 Examples:
@@ -44,6 +44,6 @@ def main [
     if $h or $help or ($url == null) or ($dirname == null) {
         print_help
     }
-    
+
     youtube_markdown $url $dirname $api_key --file-exists-action $file_exists_action
 }
