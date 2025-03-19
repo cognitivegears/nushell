@@ -24,10 +24,12 @@ Options:
   -h, --help                  Show this help message
   --file-exists-action <action>  What to do when file exists: \"skip\" (skip),
                               \"overwrite\", or \"unique\"
+  --fabric-path <path>       Path to the fabric executable (defaults to \"fabric\")
 
 Examples:
   youtube_generate_markdown.nu https://www.youtube.com/watch?v=dQw4w9WgXcQ ~/notes
   youtube_generate_markdown.nu --file-exists-action unique https://youtu.be/dQw4w9WgXcQ ~/notes
+  youtube_generate_markdown.nu --fabric-path ~/go/bin/fabric https://youtu.be/dQw4w9WgXcQ ~/notes
 "
     exit 0
 }
@@ -37,13 +39,13 @@ def main [
     dirname?: string                       # Directory to save markdown file
     api_key?: string                       # Optional YouTube API key (defaults to $env.YOUTUBE_API_KEY)
     --file-exists-action: string = "skip"  # What to do when file exists: "skip", "overwrite", or "unique"
-    -h                                     # Show help
-    --help                                 # Show help
+    --fabric-path: string = "fabric"       # Path to the fabric executable
+    --help(-h)                             # Show help
 ] {
     # Show help if requested or if required arguments are missing
-    if $h or $help or ($url == null) or ($dirname == null) {
+    if $help or ($url == null) or ($dirname == null) {
         print_help
     }
 
-    youtube_markdown $url $dirname $api_key --file-exists-action $file_exists_action
+    youtube_markdown $url $dirname $api_key --file-exists-action $file_exists_action --fabric-path $fabric_path
 }
