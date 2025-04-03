@@ -24,7 +24,7 @@ Options:
   -h, --help                  Show this help message
   --file-exists-action <action>  What to do when file exists: \"skip\" (skip),
                               \"overwrite\", or \"unique\"
-  --fabric-path <path>       Path to the fabric executable (defaults to \"fabric\")
+  --fabric-path <path>       Path to the fabric executable (defaults to fabric)
 
 Examples:
   youtube_generate_markdown.nu https://www.youtube.com/watch?v=dQw4w9WgXcQ ~/notes

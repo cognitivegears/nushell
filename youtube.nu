@@ -210,7 +210,8 @@ export def youtube_markdown [
     let markdown_header = generate_markdown_content $metadata $url
 
     # Only run the expensive fabric call if we're going to use the result
-    let summary = (^$fabric_path -y $url -sp extract_wisdom)
+    let expanded_fabric_path = ($fabric_path | path expand)
+    let summary = (^$expanded_fabric_path -y $url -sp extract_wisdom)
     let markdown = $"($markdown_header)\n\n($summary)"
 
     # Save the markdown output to file (with force flag for overwrite cases)

@@ -8,6 +8,66 @@ A collection of personal [Nushell](https://www.nushell.sh/) scripts for various 
 
 ## Available Scripts
 
+### check_updates.nu
+
+This script checks for and applies updates for various package managers. It can run automatically on a weekly schedule or be triggered manually.
+
+#### Requirements
+
+- Nushell
+- One or more of the following package managers:
+  - Homebrew (brew)
+  - Cargo
+  - Volta
+  - Mac App Store CLI (mas)
+  - npm
+
+#### Available Functions
+
+1. **update-all-packages**
+
+   Updates all detected package managers on the system.
+
+2. **check-system-updates**
+
+   ```nushell
+   check-system-updates [--force(-f)]
+   ```
+
+   The main entry point that checks if an update is needed based on the last update timestamp or forces an update with the `--force` flag.
+
+#### Usage Examples
+
+```nushell
+# Run the script directly from the command line
+nu run_updates.nu
+
+# Force an update regardless of when the last update occurred
+nu run_updates.nu --force
+
+# To use in your Nushell configuration:
+# 1. First, source the script in your config.nu:
+source /path/to/nu_scripts/check_updates.nu
+
+# 2. Then you can either:
+# A. Call the exported function directly in your startup:
+check-system-updates  # This will check if updates are needed based on the time interval
+
+# B. Or create a custom command to run when you want:
+def my-update-check [] {
+  check-system-updates
+}
+
+# C. Or create a forced update command:
+def update-all [] {
+  check-system-updates --force
+}
+```
+
+#### How It Works
+
+The script maintains a timestamp file at `~/.lastupdate` to track when updates were last run. By default, it will only perform updates if 7 days have passed since the last update. You can override this behavior with the `--force` flag.
+
 ### youtube.nu
 
 This script provides commands for fetching and formatting YouTube video metadata using the YouTube API. It can also generate markdown summaries of YouTube videos using the Fabric AI tool.
@@ -21,29 +81,29 @@ This script provides commands for fetching and formatting YouTube video metadata
 #### Available Functions
 
 1. **get_youtube_metadata**
-   
+
    ```nushell
    get_youtube_metadata [url: string, passed_api_key?: string]
    ```
-   
+
    Returns raw metadata about a YouTube video as a structured record.
 
 2. **youtube_metadata**
-   
+
    ```nushell
    youtube_metadata [url: string, passed_api_key?: string]
    ```
-   
+
    Returns formatted, human-readable metadata about a YouTube video.
 
 3. **youtube_markdown**
-   
+
    ```nushell
    youtube_markdown [url: string, dirname: string, passed_api_key?: string, --file-exists-action: string]
    ```
-   
+
    Generates a markdown file with video information and a summary created by Fabric AI. Saves the file in the specified directory.
-   
+
    The `--file-exists-action` parameter supports three options:
    - `skip` (default): Skip if a file already exists
    - `overwrite`: Overwrite existing files
